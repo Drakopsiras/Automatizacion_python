@@ -1,0 +1,61 @@
+import ftplib
+import os
+import time
+from datetime import datetime, timedelta
+
+def downloadFilesFromFtp(localfolderPath, targetFilenames, ftpHost, ftpPort, ftpUname, ftpPass, remoteWorkingDirectory):
+    # initialize the flag that specifies if download is success
+    isDownloadSuccess: bool = False
+
+    # create an FTP client instance, use the timeout parameter for slow connections only
+    ftp = ftplib.FTP(timeout=30)
+
+    # connect to the FTP server
+    ftp.connect(ftpHost, ftpPort)
+
+    # login to the FTP server
+    ftp.login(ftpUname, ftpPass)
+
+    # change current working directory if specified
+    if not (remoteWorkingDirectory == None or remoteWorkingDirectory.strip() == ""):
+        _ = ftp.cwd(remoteWorkingDirectory)
+
+    # iterate through each remote filename and download
+    for fItr in range(len(targetFilenames)):
+        targetFilename = targetFilenames[fItr]
+        # derive the local file path by appending the local folder path with remote filename
+        localFilePath = os.path.join(localfolderPath, targetFilename)
+        print("downloading file {0}".format(targetFilename))
+        # download FTP file using retrbinary function
+        with open(localFilePath, "wb") as file:
+            retCode = ftp.retrbinary("RETR " + targetFilename, file.write)
+ 
+
+
+    # send QUIT command to the FTP server and close the connection
+    ftp.quit()
+
+    # check if download is success using the return code (retCode)
+    if retCode.startswith('226'):
+        isDownloadSuccess = True
+    return isDownloadSuccess
+
+
+Dia_ayer = datetime.strftime(datetime.now() - timedelta(1), "%d%m") ------- se utiliza en caso de que el archivo a cargar sea -1 dia
+
+
+# connection parameters
+ftpHost = 'xxx.xx.xx.xx'
+ftpPort = 21
+ftpUname = 'xxxxx'
+ftpPass = 'xxxxx'
+localFolderPath = "C:/" ---- ruta donde se deja archivo
+remoteFolder = "/u/"  --- ruta ftp
+remoteFilenames = ["FPP1"+Dia_ayer+"1D."+"FPP1"+Dia_ayer+"1D"+".Z"]
+
+
+# run the function to download the files from FTP server
+isDownloadSuccess = downloadFilesFromFtp(
+    localFolderPath,remoteFilenames, ftpHost, ftpPort, ftpUname, ftpPass, remoteFolder)
+
+print("download status = {0}".format(isDownloadSuccess))
