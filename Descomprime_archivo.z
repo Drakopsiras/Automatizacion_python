@@ -1,0 +1,14 @@
+from datetime import datetime, timedelta
+Dia_ayer = datetime.strftime(datetime.now() - timedelta(1), "%d%m")
+import os
+ruta_zip = "C:/FPP1"+Dia_ayer+"1D."+"FPP1"+Dia_ayer+"1D"+".z"   
+
+import unlzw3
+from pathlib import Path
+
+uncompressed_data = unlzw3.unlzw(Path(ruta_zip))
+
+f = open("C:/FPP1"+Dia_ayer+"1D."+"FPP1"+Dia_ayer+"1D", "w") 
+f.write(uncompressed_data.decode())
+f.close()
+print("Descompresión lista")
